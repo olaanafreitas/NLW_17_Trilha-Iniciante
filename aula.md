@@ -19,3 +19,8 @@ Como um lego, você irá utilizar para criar algoritmos, ou seja, para resolver 
 Coleta dos dados
 Processar os dados (manipular, gerenciar ..)
 Apresentar os dados
+
+## Tipos de dados:
+
+Strings : textos "" '' ``
+Number : inteiros, flutuantes
