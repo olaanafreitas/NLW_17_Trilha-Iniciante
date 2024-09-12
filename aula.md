@@ -32,6 +32,7 @@ Number : inteiros, flutuantes
 
 # Condições
  - [x] switch
+ - [x] if
 
  ## Módulso em Node.JS
 
