@@ -1,4 +1,4 @@
-const { select, input } = require('@inquirer/prompts')
+const { select, input, checkbox } = require('@inquirer/prompts')
 
 let meta = {
     value: 'Drink 3L of water per day',
@@ -19,6 +19,36 @@ const cadastrarMeta = async () => {
     )
 }
 
+const listarMetas =  async () => {
+    const respostas = await checkbox ({
+        message: "Use the arrow keys to change goal, space to check or uncheck and enter to finish the step.",
+        choices: [...metas],
+        instructions: false,
+    }) 
+
+    if(respostas.lenght == 0) {
+        console.log("No goal was selected.")
+        return
+    }
+
+    metas.forEach((m) => {
+        m.checked = false
+    })
+
+    respostas.forEach((resposta) => {
+        const meta = metas.find((m) => {
+            return m.value == resposta
+
+        })
+
+        meta.checked = true
+
+    })
+
+    console.log('Goal(s) completed')
+
+}
+
 const start = async () => {
     
     while(true){
@@ -31,7 +61,7 @@ const start = async () => {
                     value: "register"
                 },
                 {
-                    name: "List a new goal",
+                    name: "List goals",
                     value: "list"
                 },
                 {
@@ -47,7 +77,7 @@ const start = async () => {
                 console.log(metas)
                 break
             case "list":
-                console.log("List a new goal:")
+                await listarMetas()
                 break
             case "logOut":
                 console.log("Bye! See ya!")
