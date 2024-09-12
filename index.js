@@ -1,13 +1,23 @@
 const { select, input, checkbox } = require('@inquirer/prompts')
+const fs = require("fs").promises
 
 let mensagem = "Welcome to your Goal's App";
 
-let meta = {
-    value: 'Drink 3L of water per day',
-    checked: false,
+let metas
+
+const carregarMetas = async () => {
+    try {
+        const dados = await  fs.readFile("metas.json", "utf-8")
+        metas= JSON.parse(dados)
+    }
+    catch(erro) {
+        metas = []
+    }
 }
 
-let metas = [meta]
+const salvarMetas = async () => {
+    await fs.writeFile("metas.json", JSON.stringify(metas, null, 2))
+}
 
 const cadastrarMeta = async () => {
     const meta = await input({message: "Type your goal:"})
@@ -24,6 +34,12 @@ const cadastrarMeta = async () => {
 }
 
 const listarMetas =  async () => {
+    
+    if(metas.lenght == 0) {
+        mensagem = "There are no goals!"
+        return
+    }
+
     const respostas = await checkbox ({
         message: "Use the arrow keys to change goal, space to check or uncheck and enter to finish the step.",
         choices: [...metas],
@@ -46,7 +62,6 @@ const listarMetas =  async () => {
         })
 
         meta.checked = true
-
     })
 
     mensagem = 'Goal(s) completed'
@@ -54,6 +69,12 @@ const listarMetas =  async () => {
 }
 
 const metasRealizadas = async () => {
+
+    if(metas.lenght == 0) {
+        mensagem = "There are no goals!"
+        return
+    }
+
     const realizadas = metas.filter ((meta) => {
         return meta.checked
     })
@@ -70,6 +91,12 @@ const metasRealizadas = async () => {
 }
 
 const metasAbertas = async  () => {
+
+    if(metas.lenght == 0) {
+        mensagem = "There are no goals!"
+        return
+    }
+
     const abertas = metas.filter ((meta) => {
         return meta.checked != true
     })
@@ -86,6 +113,12 @@ const metasAbertas = async  () => {
 }
 
 const deletarMetas = async () => {
+
+    if(metas.lenght == 0) {
+        mensagem = "There are no goals!"
+        return
+    }
+
     const metasDesmarcadas = metas.map((meta) => {
         return {value: meta.value, checked: false}
     })
@@ -121,9 +154,11 @@ const mostrarMensagem = () => {
 }
 
 const start = async () => {
-    
+    await carregarMetas()
+
     while(true){
         mostrarMensagem()
+        await salvarMetas()
 
         const opcao = await select({
             message: "Menu >",
@@ -158,7 +193,6 @@ const start = async () => {
         switch(opcao) {
             case "register":
                 await cadastrarMeta()
-                console.log(metas)
                 break
             case "list":
                 await listarMetas()
