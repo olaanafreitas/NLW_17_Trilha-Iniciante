@@ -60,11 +60,51 @@ const metasRealizadas = async () => {
     }
 
     await select({
-        message: "Finished goals",
+        message: "Finished goals " + realizadas.length,
         choices: [...realizadas]
     })
 }
 
+const metasAbertas = async  () => {
+    const abertas = metas.filter ((meta) => {
+        return meta.checked != true
+    })
+    
+    if(abertas.lenght == 0) {
+        console.log("There are no goals open! :)")
+        return
+    }
+
+    await select({
+        message: "Open goals " + abertas.length,
+        choices: [...abertas]
+    })
+}
+
+const deletarMetas = async () => {
+    const metasDesmarcadas = metas.map((meta) => {
+        return {value: meta.value, checked: false}
+    })
+    const itensADeletar = await checkbox ({
+        message: "Select an item to delete.",
+        choices: [...metasDesmarcadas],
+        instructions: false,
+    }) 
+
+    if(itensADeletar.length == 0) {
+        console.log("There are no itens to delete!")
+        return
+}
+
+    itensADeletar.forEach((item) => {
+        metas = metas.filter((meta) => {
+            return meta.value != item
+        })
+    })
+
+    console.log("Goals deleted successfully!")
+
+}
 const start = async () => {
     
     while(true){
@@ -81,8 +121,16 @@ const start = async () => {
                     value: "list"
                 },
                 {
-                    name: "Goals finished",
+                    name: "Finished goals",
                     value: "finished"
+                },
+                {
+                    name: "Open goals",
+                    value: "unfinished"
+                },
+                {
+                    name: "Delete goals",
+                    value: "delete"
                 },
                 {
                     name: "Log Out",
@@ -102,6 +150,12 @@ const start = async () => {
             case "finished":
                 await metasRealizadas()
                 break
+            case "unfinished":
+                await metasAbertas()
+                break
+                case "delete":
+                    await deletarMetas()
+                    break    
             case "logOut":
                 console.log("Bye! See ya!")
                 return
